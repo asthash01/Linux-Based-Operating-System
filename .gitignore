@@ -1,0 +1,103 @@
+1.  INTRODUCTION
+
+1.1 Overview
+This is an operating system based on Linux. The purpose is to give people a totally free alternative to Windows. Correction to the first poster: Linux USED to be complex.
+One important reason for LFS's existence is to help people learn how a Linux system works from the inside out. One of the best things that this learning experience provides is the ability to customize Linux to your own tastes and needs.
+A key benefit of LFS is that it allows users to have more control over the system without relying on someone else's Linux implementation.
+Another benefit of LFS is the ability to create a very compact Linux system. When installing a regular distribution, one is often forced to include several programs which are probably never used. These programs waste disk space, or worse, CPU cycles.
+An additional advantage of a custom built Linux system is security. By compiling the entire system from source code, you are empowered to audit everything and apply all the security patches desired. The goal of Linux From Scratch is to build a complete and usable foundation-level system.
+1.2 Project Objective & Scope
+Linux is a Unix-like computer operating system family which uses the Linux kernel. Linux is one of the most prominent examples of free software and open source development; typically all the underlying source code can be freely modified, used, and redistributed by anyone. 
+The primary difference between Linux and many other popular contemporary operating systems is that the Linux kernel and other components are free and open source software. Linux is not the only such operating system, although it is the best-known and most widely used.
+
+CHAPTER 2:-BACKGROUND AND LITERATURE SURVEY
+2.1 Software Requirement Specification
+2.2 Feasibility Report
+	2.2.1 Innovativeness and Usefulness
+	2.2.2 Market Potential and Competitive advantages
+4.1 Problem Identitification:
+What is AAKAR?
+AAKAR is a project that provides you with step-by-step instructions for understanding your own customized Linux system entirely from source. 
+Why would we want an LFS for “AAKAR” system?
+Many wonder why they should go through the hassle of building a Linux system from scratch when they could just download an existing Linux distribution. However, there are several benefits of building LFS. Consider the following: 
+LFS teaches people how a Linux system works internally Building LFS teaches you about all that makes Linux tick, how things work together and depend on each other. And most importantly, how to customize it to your own tastes and needs. 
+Building LFS produces a very compact Linux system When you install a regular distribution, you often end up installing a lot of programs that you would probably never use. They're just sitting there taking up (precious) disk space. 
+LFS is extremely flexible Building LFS could be compared to a finished house. LFS will give you the skeleton of a house, but it's up to you to install plumbing, electrical outlets, kitchen, bath, wallpaper, etc. You have the ability to turn it into whatever type of system you need it to be, customized completely for you. 
+LFS offers you added security You will compile the entire system from source, thus allowing you to audit everything, if you wish to do so, and apply all the security patches you want or need to apply. You don't have to wait for someone else to provide a new binary package that (hopefully) fixes a security hole. Often, you never truly know whether a security hole is fixed or not unless you do it yourself. 
+4.2 Feasibility study:
+
+Feasibility study is basically the test of the proposed system on the basis of its workability, achieving user’s requirements, and effective use of resources and of course, the cost effectiveness. The main goal of feasibility study is to achieve accurately estimated cost and benefits.
+Is the project technically, operationally, financially and logically feasible? The feasibility study is used to determine if the project should get the go-ahead. If the project is to precede the feasibility study will produce a project plan and budget estimates for the future stages of development. 
+The Feasibility Study is intended to determine whether a proposed system can meet the system requirements effectively. It may be initiated either as the result of a new system being proposed or from the analysis of problems perceived in an existing system.
+The study needs to assess the effectiveness of a proposed system from a number of different viewpoints:
+•	Technical - is the proposed system technically viable? 
+•	Operational – Is the proposed system will effectively solve the problem due to existing system? 
+•	Financial - do the benefits of the proposed solution outweigh the cost? 
+•	Organizational - what would be its effects on respective organization? 
+
+4.3 Feasibility Considerations
+Three keys Consideration are involved in the feasibility study:
+•	Technical Feasibility
+•	Economic Feasibility
+•	Operational  Feasibility
+4.3.1 Technical Feasibility
+While arguably not as mature as entrenched vendors, Open Source Software has made significant strides in terms of stability, maturity and interoperability.  It is believed that the current Open Source options can meet most, if not all, of information technology needs. For those areas where viable alternatives do not exist, several alternate means of providing Windows software to Open Source platforms exist.  Lastly, the viability of Open Source Software on the desktop has improved drastically in the last year. 
+
+4.3.2 Economic Feasibility
+The cost justification for migrating to Open Source Software is rapidly improving. Based on preliminary findings, both in this study and in others, it would appear that the cost of converting to Open Source Software has reached a “break even” point.  In terms of Software costs alone, Open Source Software is already much more cost-effective.  Unfortunately, software costs alone do not represent the true costs of Open Source Software a number of other factors such as conversion cost, training, and implementation must be considered.  While a full conversion may not be justifiable simply on cost at this time, a measured and rational conversion over time could well lead to significant cost savings.
+
+4.3.3 Operational Feasibility: -
+In feasibility study an estimate should be made of how strong a reaction the user staff is likely to have towards the development of computerized system. It is common knowledge that computer installations have something to do with turnover, transfers, restarting and changing employee job status. 
+
+CHAPTER 3:- SYSTEM STUDY
+System study is the first stage of system development life cycle..System study aims at establishing request for the system to be acquired,developed and installed.lt involves studying and analyzing the ways of an organization currently processing the data to produce information.Analyzing the problem thoroughly forms the vital part of the system study.In system analysis,prevailing situation of problem is carefully examined by breaking them into subproblems.Problematic areas are identified and information is collected.Data gathering is essential to any analyzis of request.lt is necessary that this analyzis familiarizez the designer with objectives,activities and the function of the organization in which system is to be implemented.
+
+3.1 Study of Existing System
+When you install a regular distribution, you often end up installing a lot of programs that you would probably never use.Linux is not a customized system according to the user's tastes and needs. It take a lot of disk space for storage, also security of linux is restricted in some means
+
+3.2 Study of Proposed System 
+There are several benefits of building LFS
+>	Building LFS produces a very compact Linux system
+>	LFS is extremely flexible
+You have the ability to turn it into whatever type of system you need it to be, customized completely for you.
+LFS offers you added security
+LFS system is compiled from source, thus allowing us to audit everything, if we wish to do so, and apply all the security patches we want or need to apply.
+The second phase in system development cycle is system analysis. Analysis involved a detailed study of the current system, leading to specifications of a new system. Analysis is a detailed study of various operations performed by a system and their relationships within and outside the system.
+
+System Analysis also includes sub-dividing of complex process involving the entire system, identification of data store and manual processes.
+
+The main points to be discussed in system analysis are:
+•	Specification of what the new system is to accomplish based on the user requirements.
+•	Functional hierarchy showing the functions to be performed by the new system and their relationship with each other.
+•	Function network which are similar to function hierarchy but they highlight the those functions which are common to more than one procedure.
+ 
+
+CHAPTER 4:- DESIGN
+Based on the user requirements and the detailed analysis of a new system, the new system must be designed. This is the phase of system designing. It is a most crucial phase in the development of a system. Normally, the design proceeds in two stages :
+4.1 Preliminary or General Design
+Preliminary or general design: In the preliminary or general design, the features of the new system are specified. The costs of implementing these features and the benefits to be derived are estimated. If the project is still considered to be feasible, we move to the detailed design stage.
+
+4.2 Structure or Detailed Design
+Structure or Detailed design: In the detailed design stage, computer oriented work begins in earnest. At this stage, the design of the system becomes more structured. Structure design is a blue print of a computer system solution to a given problem having the same components and inter-relationship among the same components as the original problem. Input, output and processing specifications are drawn up in detail. In the design stage, the programming language and the platform in which the new system will run are also decided.
+After designing the new system, the whole system is required to be converted into computer understanding language. Coding the new system into computer programming language does this. It is an important stage where the defined procedure are transformed into control specifications by the help of a computer language. This is also called the programming phase in which the programmer converts the program specifications into computer instructions, which we refer as programs. The programs coordinate the data movements and control the entire process in a system.
+
+CHAPTER 5:- TECHNICAL DETAILS
+5.1 Software Specification
+linux
+5.2 Hardware Specification
+: PENTIUM IV Ram       :512 MB RAM Hard Disk : 80 GB Hard disk
+
+CHAPTER 7:- TESTING
+In our project we deals with making a new operating system from an existing one. Instead Of coding here we install various kind of packages using some built in commands using the existing system. These packages are given in tarball format. The procedure used to deal with these packages are
+>	Untar
+>	Configure
+>	Compilation
+>	Installation
+Before actually implementing the new system into operations, a test run of the system is done removing all the bugs, if any. It is an important phase of a successful system. After codifying the whole programs of the system, a test plan should be developed and run on a given set of test data. The output of the test run should match the expected results.
+
+Using the test data following test run are carried out:
+
+7.1 Unit Testing
+When the programs have been coded and compiled and brought to working conditions, they must be individually tested with the prepared test data. Any undesirable happening must be noted and debugged (error corrections).
+7.2 System Testing
+After carrying out the unit test for each of the programs of the system and when errors are removed, then system test is done. At this stage the test is done on actual data. The complete system is executed on the actual data. At each stage of the execution, the results or output of the system is analysed. During the result analysis, it may be found that the outputs are not matching the expected out of the system. In such case, the errors in the particular programs are identified and are fixed and further tested for the expected output.
