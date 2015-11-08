@@ -1,0 +1,2006 @@
+CHAPTER 1INTRODUCTION
+One important reason for LFS's existence is to help people learn how a Linux system works from the inside out. One of the best things that this learning experience provides is the ability to customize Linux to your own tastes and needs.
+
+A key benefit of LFS is that it allows users to have more control over the system without relying on someone else's Linux implementation.
+
+Another benefit of LFS is the ability to create a very compact Linux system. When installing a regular distribution, one is often forced to include several programs which are probably never used. These programs waste disk space, or worse, CPU cycles.
+
+An additional advantage of a custom built Linux system is security. By compiling the entire system from source code, you are empowered to audit everything and apply all the security patches desired. The goal of Linux From Scratch is to build a complete and usable foundation-level system.
+ 
+CHAPTER 2 MODULES
+
+The LFS system will be built by using a previously installed Linux distribution (such as Debian, Mandriva, Red Hat. or SUSE). This existing Linux system (the host) will be used as a starting point to provide necessary programs, including a compiler, linker, and shell, to build the new system. Our LFS system has five modules. They are
+
+>	Create a new Linux native partition and file system.
+y	Download the packages and patches.
+>	Constructing a temporary system.
+>	Constructing a LFS system.
+>	Making LFS system bootable.
+
+2.1: CREATE A NEW LINUX NATIVE PARTITION AND FILE SYSTEM.
+
+In this step, the partition which will host the LFS system is prepared. We will create the partition itself, create a file system on it, and mount it.
+
+2.1.1. Creating a New Partition
+
+Like most other operating systems, LFS is usually installed on a dedicated partition. The recommended approach to building an LFS system is to use an available empty partition. A minimal system requires a partition of around 1.3 gigabytes (GB). This is enough to store all the source tarballs and compile the packages. However, if the LFS system is intended to be the primary Linux system, additional software will probably be installed which will require additional space (2-3 GB). it is a good idea to use a small disk partition as swap space. This is used by the kernel to store seldom-used data and leave more memory available for active processes.
+2.1.2.	Creating a File System on the Partition
+
+Now that a blank partition has been set up, the file system can be created. The most widely-used system in the Linux world is the second extended file system (ext2), but with newer high-capacity hard disks, journaling file systems are becoming increasingly popular.
+
+2.1.3.	Mounting the New Partition
+
+Now that a file system has been created, the partition needs to be made accessible. In order to do this, the partition needs to be mounted at a chosen mount point.
+Choose a mount point and assign it to the LFS environment variable by running:
+export LFS=/mnt/lfs
+Next, create the mount point and mount the LFS file system by running: mkdir -pv $LFS
+mount -v -t ext3 /dev/<xxr> $LFS
+Replace <xxx> with the designation of the LFS partition.
+2.2:DOWNLOAD THE PACKAGES AND PATCHES.
+Downloaded packages and patches will need to be stored somewhere that is conveniently available throughout the entire build. A working directory is also required to unpack the sources and build them. $LFS/sources can be used both as the place to store the tarballs and patches and as a working directory. By using this directory, the required elements will be located on the LFS partition and will be available during all stages of the building process.
+
+To create this directory, execute the following command, as user root, before starting the download session: mkdir -v $LFS/sources
+
+2.2.1	Creating the $LFS/tools Directory
+
+All programs compiled in this step will be installed under $LFS/tools to keep them separate from the programs compiled in next step.Programs compiled here are temporary tools and will not be a part of the final LFS system. By keeping these programs in a separate directory, they can easily be discarded later after their use.
+
+Create the required directory by running the following as root:
+
+mkdir -v $LFS/tools
+
+The next step is to create a /tools symlink on the host system. This will point to the newly-created directory on the LFS partition. Run this command as root as well:
+
+In -sv $LFS/tools /
+
+
+
+2.2.2	Adding the LFS User
+
+When logged in as user root, making a single mistake can damage or destroy a system. Therefore, we recommend building the packages in this chapter as an unprivileged user.
+
+Grant lfs full access to $LFS/tools by making lfs the directory owner:.If a separate working directory was created as suggested, give user lfs ownership of this directory:
+
+2.2.3	Toolchain
+
+The overall goal of this step is to provide a temporary environment that can be chrooted into and from which can be produced a clean, trouble-free build of the target LFS system.Various packages to be installed are:
+
+2.2.4	Binutils-2.17 - Pass 1
+The Binutils package contains a linker, an assembler, and other tools for handling object files.
+
+2.2.5	GCC-4.1.2- Pass 1
+
+The GCC package contains the GNU compiler collection, which includes the C and C++ compilers.
+2.2.6	Linux-2.6.22.5 API Headers
+The Linux API Headers expose the kernel's API for use by Glibc.
+2.2.7	Glibc-2.5.1
+The Glibc package contains the main C library. This library provides the basic routines for allocating memory, searching directories, opening and closing files, reading and writing files, string handling, pattern matching, arithmetic, and so on.
+2.2.8	Tcl-8.4.15
+The Tel package contains the Tool Command Language.
+2.2.9	Expect-5.43.0
+The Expect package contains a program for carrying out scripted dialogues with other interactive programs.
+2.2.10	DejaGNU-1.4.4
+The DejaGNU package contains a framework for testing other programs.
+2.2.11	GCC-4.1.2-Pass 2
+The GCC package contains the GNU compiler collection, which includes the C and C++ compilers.
+ 
+
+2.2.12	Binutils-2.17 - Pass 2
+
+The Binutils package contains a linker, an assembler, and other tools for handling object files.
+
+2.2.13	Ncurses-5.6
+
+The Ncurses package contains libraries for terminal-independent handling of ■character screens.
+2.2.14	Bash-3.2
+The Bash package contains the Bourne-Again SHell.
+2.2.15	Bzip2-1.0.4
+The Bzip2 package contains programs for compressing and decompressing files. Compressing text files with bzip2 yields a much better compression percentage than with the traditional gzip.
+
+2.2.16	Coreutils-6.9
+
+The Coreutils package contains utilities for showing and setting the basic system characteristics.
+
+2.2.17	Diffutils-2.8.1
+
+The Diffutils package contains programs that show the differences between files or directories.
+
+,2.2.18 Findutils-4.2.31
+
+The Findutils package contains programs to find files. These programs are provided to recursively search through a directory tree and to create, maintain, and search a database (often faster than the recursive find, but unreliable if the database has not been Recently updated).
+S.2.19Gawk-3.1.5
+The Gawk package contains programs for manipulating text files.
+2.2.20	Gettext-0.16.1
+The Gettext package contains utilities for internationalization and localization. These allow programs to be compiled with NLS (Native Language Support), enabling them to output messages in the user's native language.
+2.2.21	Grep-2.5.1a
+The Grep package contains programs for searching through files.
+2.2.22	Gzip-1.3.12
+The Gzip package contains programs for compressing and decompressing files.
+2.2.23	Make-3.81
+The Make package contains a program for compiling packages.
+2.2.24	Patch-2.5.4
+The Patch package contains a program for modifying or creating files by applying a "patch" file typically created by the diff program.
+
+2.2.25	Perl-5.8.8
+
+The Perl package contains the Practical Extraction and Report Language.
+ 
+
+The Sed package contains a stream editor.
+2.2.27	Tar-1.18
+The Tar package contains an archiving program.
+2.2.28	Texinfo-4.9
+The Texinfo package contains programs for reading, writing, and converting info
+pages.
+
+2.2.29	Util-linux-2.12r
+
+The Util-linux package contains miscellaneous utility programs. Among them are utilities for handling file systems, consoles, partitions, and messages.
+
+f.3: CONSTRUCTING TEMPORARY LFS SYSTEM.
+
+2.3.1 Preparing Virtual Kernel File Systems
+
+Various file systems exported by the kernel are used to communicate to and from the kernel itself. These file systems are virtual in that no disk space is used for them. The content of the file systems resides in memory.
+
+2.3.2. Creating Initial Device Nodes
+
+When the kernel boots the system, it requires the presence of a few device nodes, in particular the console and null devices. The device nodes will be created on the hard disk so that they are available before udevd has been started, and additionally when Linux is started with init-/bin/bash.
+ 
+
+2.3.3 Mounting and Populating /dev
+
+The recommended method of populating the /dev directory with devices is to mount a virtual filesystem (such as tmpfs) on the /dev directory, and allow the devices to mt created dynamically on that virtual filesystem as they are detected or accessed. This is generally done during the boot process by Udev.
+2.3.4. Mounting Virtual Kernel File Systems
+Now mount the remaining virtual kernel filesystems:
+2.3.5	Entering the Chroot Environment
+Enter the chroot environment to begin building and installing the final LFS
+system.
+
+2.3.6	Creating Directoriesa
+
+It is time to create some structure in the LFS file system. Create a standard directory tree.
+
+2.3.7	Creating Essential Files and Symlinks
+
+Some programs use hard-wired paths to programs which do not exist yet. In order to satisfy these programs, create a number of symbolic links which will be replaced by real files after the software has been installed:
+
+A proper Linux system maintains a list of the mounted file systems in the file /etc/mtab. Normally, this file would be created when we mount a new file system. Since we will not be mounting any file systems inside our chroot environment, create an empty file for utilities that expect the presence of /etc/mtab:
+
+In order for user root to be able to login and for the name "root" to be recognized, there must be relevant entries in the /etc/passwd and /etc/group files.
+2.4: CONSTRUCTING A LFS SYSTEM.
+
+.In this module we are installing various packages needed for constructing an actual LFS system , using the previously created temporary system. Various packages to be installed are:
+2.4.1	Linux-2.6.22.5 API Headers
+The Linux API Headers expose the kernel's API for use by Glibc.
+Contents of Linux API Headers
+Installed headers: /usr/include/{asm{,-generic},linux,mtd,rdma,sound}/*.h
+
+Short Descriptions
+/usr/include/{asm{,-generic},linux,mtd,rdma,sound}/*.h The Linux API headers
+
+2.4.2	Man-pages-2.63
+
+The Man-pages package contains over 3,000 man pages.
+
+Contents of Man-pages Installed files: various man pages
+
+Short Descriptions
+man       Describe C programming language functions, important device files, and pages     significant configuration files
+
+2.4.3	Glibc-2.5.1
+
+The Glibc package contains the main C library. This library provides the basic routines for allocating memory, searching directories, opening and closing files, reading and writing files, string handling, pattern matching, arithmetic, and so on.
+Contents of Glibc
+Installed programs: catchsegv, genc-at, getconf, getent, iconv, iconvconfig, ldconfig, ldd, lddlibc4, locale, localedef, mtrace, used, pcprofiledump, pt_chovvn, rpegen, rpcinfo, sin, sprof, tzselect, xtrace, zdump, and zic
+Installed libraries: Id.so, HbBrokenLocale.{a,so}, libSegFault.so, libanl.{a,so}, libbsd-compat.a, libc.{a,so}, libcidn.so, libcrypt.{a,so}, libdl.{a,so}, libg.a, libieee.a, libm.{a,so}, libmcheck.a, libmemusage.so, libnsl.{a,so}, libnss_compat.so, libnss_dns.so, libnss_files.so, libnss_hesiod.so, libnss_nis.so, libnss_nisplus.so, libpcprofile.so, libpthread.{a,so}, libresolv.{a,so}, librpcsvc.a, librt.{a,so}, libthread_db.so, and libutil.{a,so}
+ 
+Short Descriptions
+catchsegv
+gencat
+getconf
+getent
+iconv
+iconvconfig ldconfig
+
+ldd
+
+lddlibc4 iocale
+localedef
+mtrace nscd
+ 
+
+Can be used to create a stack trace when a program terminates with a segmentation fault
+Generates message catalogues
+Displays the system configuration values for file system specific variables
+Gets entries from an administrative database
+Performs character set conversion
+Creates fastloading iconv module configuration files
+Configures the dynamic linker runtime bindings
+Reports which shared libraries are required by each given program or shared library
+Assists ldd with object files
+Prints various information about the current locale
+Compiles locale specifications
+Reads and interprets a memory trace file and displays a summary in human-readable format
+A daemon that provides a cache for the most common
+ipcprofiledump Pt_chown
+
+
+rpcgen
+
+rpcinfo
+sin
+sprof
+
+tzselect
+
+
+xtrace
+zdump zic
+■Ld.so
+
+
+
+libBrokenLocale
+
+
+libSegFault libanl
+
+
+-libbsd-compat
+
+libc libcidn
+ 
+name service requests
+Dumps information generated by PC profiling
+A helper program for grantpt to set the owner, group and access permissions of a slave pseudo terminal
+Generates C code to implement the Remote Procecure Call (RPC) protocol
+Makes an RPC call to an RPC server
+A statically linked In program
+Reads and displays shared object profiling data
+Asks the user about the location of the system and reports the corresponding time zone description
+Traces the execution of a program by printing the currently executed function
+The time zone dumper
+The time zone compiler
+The helper program for shared library executables
+Used internally by Glibc as a gross hack to get broken programs (e.g., some Motif applications) running. See comments in glibc-2.5.1/locale/broken_cur_max.c for more information
+The segmentation fault signal handler, used by catchsegv
+An asynchronous name lookup library
+Provides the portability needed in order to run certain Berkeley Software Distribution (BSD) programs under Linux
+The main C library
+Used internally by Glibc for handling internationalized domain names in the getaddrinfoQ function
+ 
+
+The cryptography library
+The dynamic linking interface library
+Dummy library containing no functions. Previously was a runtime library for g++
+Linking in this module forces error handling rules for math functions as defined by the Institute of Electrical and Electronic Engineers (IEEE). The default is POSIX.l error handling
+The mathematical library
+Turns on memory allocation checking when linked to
+Used by memusage to help collect information about the memory usage of a program
+The network services library
+The Name Service Switch libraries, containing functions for resolving host names, user names, group names, aliases, services, protocols, etc.
+Contains profiling functions used to track the amount of CPU time spent in specific source code lines
+The POSIX threads library
+Contains functions for creating, sending, and interpreting packets to the Internet domain name servers
+Contains functions providing miscellaneous RPC services
+Contains functions providing most of the interfaces specified by the POSIX. 1 b Realtime Extension
+Contains functions useful for building debuggers for multi-threaded programs
+Contains code for "standard" functions used in many
+ 
+different Unix utilities
+
+
+2.4.4	Re-adjusting the Toolchain
+
+Now that the final C libraries have been installed, it is time to adjust the toolchain again. The toolchain will be adjusted so that it will link any newly compiled program against these new libraries.
+
+2.4.5	Binutils-2.17
+
+The Binutils package contains a linker, an assembler, and other tools for handling object files.
+
+Contents of Binutils
+Installed programs: addr21ine, ar, as, c++filt, gprof, Id, nm, objcopy, objdump, ranlib, readelf, size, strings, and strip
+Installed libraries: libiberty.a, libbfd.{a,so}, and libopcodes.{a,so} Short Descriptions
+ 
+
+
+
+addr21ine
+ 
+Translates program addresses to file names and line numbers; given an address and the name of an executable, it uses the debugging information in
+ 
+the executable to determine which source file and line number are associated
+with the address
+ 
+Ar
+ 
+Creates, modifies, and extracts from archives
+ 
+
+ 
+as
+ 
+An assembler that assembles the output of gcc into object files
+ 
+
+c++filt
+ 
+Used by the linker to de-mangle C++ and Java symbols and to keep overloaded functions from clashing
+ 
+
+ 
+gprof
+ 
+Displays call graph profile data
+ 
+
+Id
+ 
+A linker that combines a number of object and archive files into a single file, relocating their data and tying up symbol references
+ 
+
+ 
+nm
+ 
+Lists the symbols occurring in a given object file
+ 
+
+objcopy    Translates one type of object file into another
+Displays information about the given object file, with options controlling the objdump   particular information to display; the information shown is useful to
+programmers who are working on the compilation tools
+ranlib
+readelf size
+strings
+strip
+libiberty Ibbfd
+libopcodes
+Generates an index of the contents of an archive and stores it in the archive; the index lists all of the symbols defined by archive members that are relocatable object files
+Displays information about ELF type binaries
+Lists the section sizes and the total size for the given object files
+Outputs, for each given file, the sequences of printable characters that are of at least the specified length (defaulting to four); for object files, it prints, by default, only the strings from the initializing and loading sections while for other types of files, it scans the entire file
+Discards symbols from object files
+Contains routines used by various GNU programs, including getopt, obstack, strerror, strtol, and strtoul
+The Binary File Descriptor library
+A library for dealing with opcodes—the "readable text" versions of instructions for the processor; it is used for building utilities like objdump.
+
+2.4.6 GCC-4.1.2
+
+The GCC package contains the GNU compiler collection, which includes the C and C++ compilers.
+
+Contents of GCC
+Installed programs: C++, cc (link to gcc), cpp, g++, gcc, gccbug, and gcov Installed libraries: libgcc.a, libgcc_eh.a, libgcc_s.so, libmudflap.{a,so}, libssp.{a,so}libstdc++.{a,so}, and libsupc++.a
+.Short Descriptions
+,c++	The C++ compiler
+cc	The C compiler
+The C preprocessor; it is used by the compiler to expand the #inc,lude,
+cpp
+#define, and similar statements in the source files
+g++	The C++ compiler
+gcc	The C compiler
+gccbug     A shell script used to help create useful bug reports
+A coverage testing tool; it is used to analyze programs to determine where
+gcov
+optimizations will have the most effect jlibgcc      Contains run-time support for gcc
+libmudflap Contains routines that support GCC's bounds checking functionality
+■libssp       Contains routines supporting GCC's stack-smashing protection functionality
+libstdc++  The standard C++ library
+libsupc++ Provides supporting routines for the C++ programming language G.4.7 Berkeley DB-4.5.20
+The Berkeley DB package contains programs and utilities used by many other applications for database related functions.
+
+Contents of Berkeley DB
+Installed programs: db_archive, db_checkpoint, db_dead!ock, db_dump, db_hotbackup, dbjoad, db_printlog, db_recover, db_stat, db_upgrade, and db_verify Installed libraries: libdb.{so,ar}and libdb_cxx.r{o,ar}
+
+:Short Descriptions
+db_archive Prints the pathnames of log files that are no longer in use db_checkpoint   A daemon used to monitor and checkpoint database logs
+ 
+
+ 
+db^deadlock db_dump
+
+db_hotbackup
+db_load
+db_printlog
+db_recover
+db_stat
+db_upgrade
+db_verify
+libdb.{so,a}
+libdb_cxx.{ so,a
+ 
+A daemon used to abort lock requests when deadlocks are detected
+Converts database files to a plain-text file format readable by db_Joad
+Creates "hot backup" or "hot failover" snapshots of Berkeley DB databases
+Is used to create database files from plain-text files Converts database log files to human readable text Is used to restore a database to a consistent state after a failure Displays statistics for Berkeley databases
+Is used to upgrade database files to a newer version of Berkeley DB Is used to run consistency checks on database files Contains functions to manipulate database files from C programs Contains functions to manipulate database files from C++ programs
+ 
+2.4.8	Sed-4.1.5
+The Sed package contains a stream editor.
+Contents of Sed
+Installed program: sed
+
+Short Descriptions
+
+sed Filters and transforms text files in a single pass
+
+1.4.9	E2fsprogs-1.40.2
+
+The E2fsprogs package contains the utilities for handling the ext2 file system. It also supports the ext3 journaling file system.
+Contents of E2fsprogs
+Installed programs: badblocks, blkid, chattr, compile_et, debugfs, dumpe2fs, e2fsck, e2image, e21abel, filefrag, findfs, fsck, fsck.ext2, fsck.ext3, logsave, lsattr, mk_cmds, mke2fs, mkfs.ext2, mkfs.ext3, mklost+found, resize2fs, tune2fs, and uuidgen. Installed libraries: libblkid.{a,so}, libcom_err.{a,so}, libe2p.{a,so}, libext2fs.{a,so}, ;libss.{a,so}, and libuuid.{a,so}
+blkid chattr
+;compile_et
+debugfs
+dumpe2fs
+E2fsck
+E2image
+E21abel
+filefrag
+jfindfs
+fsck
+,fsck.ext2 fsck.ext3 logsave
+
+Short Descriptions
+
+feadblocks     Searches a device (usually a disk partition) for bad blocks
+A command line utility to locate and print block device attributes
+Changes the attributes of files on an ext2 file system; it also changes ext3 file systems, the journaling version of ext2 file systems
+An error table compiler; it converts a table of error-code names and messages into a C source file suitable for use with the com_err library
+A file system debugger; it can be used to examine and change the state of an ext2 file system
+Prints the super block and blocks group information for the file system present on a given device
+Is used to check, and optionally repair ext2 file systems and ext3 file systems
+Is used to save critical ext2 file system data to a file
+Displays or changes the file system label on the ext2 file system present on a given device
+Reports on how badly fragmented a particular file might be Finds a file system by label or Universally Unique Identifier (UUID) Is used to check, and optionally repair, file systems By default checks ext2 file systems By default checks ext3 file systems Saves the output of a command in a log file
+ 
+Lsattr
+Lists the attributes of files on a second extended file system
+mk_cmds
+mke2fs mkfs.ext2 ■mkfs.ext3
+■mklost+found
+resize2fs tune2fs
+uuidgen
+libblkid
+Converts a table of command names and help messages into a C source file suitable for use with the libss subsystem library
+Creates an ext2 or ext3 file system on the given device
+By default creates ext2 file systems
+By default creates ext3 file systems
+Used to create a lost+found directory on an ext2 file system; it pre-allocates disk blocks to this directory to lighten the task of e2fsck
+Can be used to enlarge or shrink an ext2 file system
+Adjusts tunable file system parameters on an ext2 file system
+Creates new UUIDs. Each new UUID can reasonably be considered unique among all UUIDs created, on the local system and on other systems, in the past and in the future
+Contains routines for device identification and token extraction
+libcom_err    The common error display routine
+libext2fs libss
+kbe2p	Used by dumpe2fs, chattr, and lsattr
+Contains routines to enable user-level programs to manipulate an ext2 file system
+Used by debugfs
+libuuid
+Contains routines for generating unique identifiers for objects that may be accessible beyond the local system
+
+2.4.10 Coreutils-6.9
+
+The Coreutils package contains utilities for showing and setting the basic system characteristics.
+
+Contents of Coreutils
+Installed programs: base64, basename, cat, chgrp, chmod, chown, chroot, cksum, comm, cp, csplit, cut, date, dd, df, dir, dircolors, dirname, du, echo, env, expand, expr,
+ 
+factor, false, fmt, fold, groups, head, hostid, hostname, id, install, join, link, In, logname.. Is, md5sum, mkdir, mkfifo, mknod, mv, nice, nl, nohup, od, paste, pathchk, pinky, pr, printenv, printf, ptx, pwd, readlink, rm, rmdir, seq, shalsum, sha224sum, sha256sum, sha384sum, sha512sum, shred, shuf, sleep, sort, split, stat, stty, sum, sync, tac, tail, tee, test, touch, tr, true, tsort, tty, uname, unexpand, uniq, unlink, users, vdir, wc, who, whoami, and yes
+
+iShort Descriptions
+base64      Encodes and decodes data according to the base64 (RFC 3548) specification
+basename  Strips any path and a given suffix from a file name
+cat	Concatenates files to standard output
+chgrp       Changes the group ownership of files and directories
+Changes the permissions of each file to the given mode; the mode can be chmod      either a symbolic representation of the changes to make or an octal number representing the new permissions
+chown      Changes the user and/or group ownership of files and directories
+chroot       Runs a command with the specified directory as the / directory
+ 
+
+cksum
+ 
+Prints the Cyclic Redundancy Check (CRC) checksum and the byte counts of each specified file
+ 
+
+comm
+ 
+Compares two sorted files, outputting in three columns the lines that are unique and the lines that are common
+ 
+
+ 
+cp
+ 
+Copies files
+ 
+
+csplit
+ 
+Splits a given file into several new files, separating them according to given patterns or line numbers and outputting the byte count of each new file
+ 
+
+ 
+
+ 
+
+ 
+date
+ 
+Displays the current time in the given format, or sets the system date
+ 
+
+del
+ 
+Copies a file using the given block size and count, while optionally performing conversions on it
+Df dir
+dircolors
+dirname
+du
+echo
+env
+expand
+expr
+factor
+
+■false
+
+fmt
+fold
+groups
+'head
+liostid
+hostname
+
+Id
+
+
+install
+
+join link Ln
+ 
+Reports the amount of disk space available (and used) on all mounted tile systems, or only on the file systems holding the selected files
+Lists the contents of each given directory (the same as the Is command)
+Outputs commands to set the LS_COLOR environment variable to change the color scheme used by Is
+Strips the non-directory suffix from a file name
+Reports the amount of disk space used by the current directory, by each of the given directories (including all subdirectories) or by each of the given files
+Displays the given strings
+Runs a command in a modified environment
+Converts tabs to spaces
+Evaluates expressions
+Prints the prime factors of all specified integer numbers
+Does nothing, unsuccessfully; it always exits with a status code indicating failure
+Reformats the paragraphs in the given files Wraps the lines in the given files Reports a user's group memberships
+Prints the first ten lines (or the given number of lines) of each given file Reports the numeric identifier (in hexadecimal) of the host Reports or sets the name of the host
+Reports the effective user ID, group ID, and group memberships of the current user or specified user
+Copies files while setting their permission modes and, if possible, their owner and group
+Joins the lines that have identical join fields from two separate files Creates a hard link with the given name to a file Makes hard links or soft (symbolic) links between files
+logname
+Ls
+md5sum mkdir
+
+mkfifo
+
+
+mknod
+
+mv
+nice
+Nl
+kohup od
+paste pathchk [pinky Pr
+printenv jprintf
+
+
+ptx
+
+j.pwd
+readlink
+rm
+.rmdir
+ 
+Reports the current user's login name
+Lists the contents of each given directory
+Reports or checks Message Digest 5 (MD5) checksums
+Creates directories with the given names
+Creates First-In, First-Outs (FIFOs), a "named pipe" in UNIX parlance, with the given names
+Creates device nodes with the given names; a device node is a character special file, a block special file, or a FIFO
+Moves or renames files or directories
+Runs a program with modified scheduling priority
+Numbers the lines from the given files
+Runs a command immune to hangups, with its output redirected to a log file Dumps files in octal and other formats
+Merges the given files, joining sequentially corresponding lines side by side, separated by tab characters
+Checks if file names are valid or portable
+Is a lightweight finger client; it reports some information about the given users
+Paginates and columnates files for printing Prints the environment
+Prints the given arguments according to the given format, much like the C printf function
+Produces a permuted index from the contents of the given files, with each keyword in its context
+Reports the name of the current working directory Reports the value of the given symbolic link Removes files or directories Removes directories if they are empty
+ 
+
+Prints a sequence of numbers within a given range and with a given
+seq
+increment
+shalsum    Prints or checks 160-bit Secure Hash Algorithm 1 (SHA1) checksums sha224sum Prints or checks 224-bit Secure Hash Algorithm checksums sha256sum Prints or checks 256-bit Secure Hash Algorithm checksums ;sha384sum Prints or checks 384-bit Secure Hash Algorithm checksums sha512sum Prints or checks 512-bit Secure Hash Algorithm checksums
+Overwrites the given files repeatedly with complex patterns, making it
+shred
+difficult to recover the data
+shuf	Shuffles lines of text
+sleep        Pauses for the given amount of time
+sort	Sorts the lines from the given files
+split	Splits the given file into pieces, by size or by number of lines
+stat	Displays file or filesystem status
+stty	Sets or reports terminal line settings
+sum	Prints checksum and block counts for each given file
+Flushes file system buffers; it forces changed blocks to disk and updates the
+sync
+super block
+tac	Concatenates the given files in reverse
+tail	Prints the last ten lines (or the given number of lines) of each given file
+Reads from standard input while writing both to standard output and to the
+tee
+given files
+test	Compares values and checks file types
+Changes file timestamps, setting the access and modification times of the touch        given files to the current time; files that do not exist are created with zero length
+Tr	Translates, squeezes, and deletes the given characters from standard input
+true	Does nothing, successfully; it always exits with a status code indicating
+Performs a topological sort; it writes a completely ordered list according to
+tsort
+the partial ordering in a given file
+tty	Reports the file name of the terminal connected to standard input
+uname      Reports system information unexpand  Converts spaces to tabs
+uniq	Discards all but one of successive identical lines
+unlink       Removes the given file
+users        Reports the names of the users currently logged on
+vdir	Is the same as Is -1
+Reports the number of lines, words, and bytes for each given file, as well as
+wc
+total line when more than one file is given
+who	Reports who is logged on
+whoami    Reports the user name associated with the current effective user ID
+Yes	Repeatedly outputs "y" or a given string until killed
+
+2.4.11 Iana-Etc-2.20
+
+The Iana-Etc package provides data for network services and protocols.
+
+Contents of Iana-Etc
+Installed files: /etc/protocols and /etc/services
+
+phort Descriptions
+
+Describes the various DARPA Internet protocols that are available from
+/etc/protocols
+the TCP/IP subsystem
+
+Provides a mapping between friendly textual names for internet services,
+/etc/services
+and their underlying assigned port numbers and protocol types
+2.4.12 M4-1.4.10
+
+The M4 package contains a macro processor.
+
+Contents of M4
+Installed program: m4
+
+Short Descriptions
+copies the given files while expanding the macros that they contain. These macros are either built-in or user-defined and can take any number of arguments. Besides performing macro expansion, m4 has built-in functions for including named files,
+M4
+running Unix commands, performing integer arithmetic, manipulating text, recursion, etc. The m4 program can be used either as a front-end to a compiler or as a macro processor in its own right.
+2.4.13 Bison-2.3
+The Bison package contains a parser generator.
+(Contents of Bison
+Installed programs: bison and yacc installed library: liby.a
+
+iShort Descriptions
+
+Generates, from a series of rules, a program for analyzing the structure of text files;
+bison
+Bison is a replacement for Yacc (Yet Another Compiler Compiler)
+
+A wrapper for bison, meant for programs that still call yacc instead of bison; it calls
+yacc
+bison with the -y option
+The Yacc library containing implementations of Yacc-compatible yyerror and main
+liby.a
+functions; this library is normally not very useful, but POSIX requires it 14.14 Ncurses-5.6
+The Ncurses package contains libraries for terminal-independent handling of character screens.
+
+Contents of Ncurses
+nstalled programs: captoinfo (link to tic), clear, infocmp, infotocap (link to tic), reset (link to tset), tack, tic, toe, tput, and tset
+Installed libraries: libcursesw.{a,so} (symlink and linker script to libncursesw.{a,so}), libformw.{a,so}, libmenuw.{a,so}, libncurses-H-w.a, libncursesw.{a,so}, libpanelw.{a,so} and their non-wide-character counterparts without "w" in the library names.
+
+(Short Descriptions
+captoinfo Converts a termcap description into a terminfo description
+clear       Clears the screen, if possible
+Infocmp   Compares or prints out terminfo descriptions
+infotocap Converts a terminfo description into a termcap description
+reset       Reinitializes a terminal to its default values
+The terminfo action checker; it is mainly used to test the accuracy of an entry
+tack
+in the terminfo database
+The terminfo entry-description compiler that translates a terminfo file from
+tic	source format into the binary format needed for the ncurses library routines. A
+terminfo file contains information on the capabilities of a certain terminal
+Lists all available terminal types, giving the primary name and description for
+toe
+each
+Makes the values of terminal-dependent capabilities available to the shell; it
+tput
+can also be used to reset or initialize a terminal or report its long name
+tset	Can be used to initialize terminals
+libcurses A link to libncurses
+libncurses Contains functions to display text in many complex ways on a terminal screen;
+a good example of the use of these functions is the menu displayed during the kernel's make menuconfig
+libform    Contains functions to implement forms
+libmenu   Contains functions to implement menus
+libpanel   Contains functions to implement panels
+2.4.15 Procps-3.2.7
+The Procps package contains programs for monitoring processes. Contents of Procps
+Installed programs: free, kill, pgrep, pkill, pmap, ps, pwdx, skill, slabtop, snice, iysctl, tload, top, uptime, vmstat, w, and watch Installed library: libproc.so
+
+fehort Descriptions
+
+Reports the amount of free and used memory (both physical and swap memory)
+free
+in the system
+Sends signals to processes jjgrep  Looks up processes based on their name and other attributes pkill    Signals processes based on their name and other attributes pmap  Reports the memory map of the given process ps      Lists the current running processes pwdx  Reports the current working directory of a process skill    Sends signals to processes matching the given criteria slabtop Displays detailed kernel slap cache information in real time "snice   Changes the scheduling priority of processes matching the given criteria ^ysctl  Modifies kernel parameters at run time tload   Prints a graph of the current system load average
+Displays a list of the most CPU intensive processes; it provides an ongoing look
+top
+at processor activity in real time
+Reports how long the system has been running, how many users are logged on,
+uptime
+and the system load averages
+Reports virtual memory statistics, giving information about processes, memory,
+vmstat
+paging, block Input/Output (IO), traps, and CPU activity w       Shows which users are currently logged on, where, and since when
+Runs a given command repeatedly, displaying the first screen-full of its output;
+j»/atch
+this allows a user to watch the output change over time libproc Contains the functions used by most programs in this package
+
+
+
+
+2.4.16	Libtool-1.5.24
+
+The Libtool package contains the GNU generic library support script. It wraps the complexity of using shared libraries in a consistent, portable interface.
+
+Contents of Libtool
+Installed programs: libtool and libtoolize Installed libraries: libltdl.{a,so}
+■Short Descriptions
+tibtool    Provides generalized library-building support services libtoolize Provides a standard way to add libtool support to a package libltdl     Hides the various difficulties of dlopening libraries
+2.4.17	Perl-5.8.8
+The Perl package contains the Practical Extraction and Report Language. Contents of Perl
+Installed programs: a2p, c2ph, cpan, dprofpp, enc2xs, find2perl, h2ph, h2xs, instmodsh, libnetcfg, perl, perl5.8.8 (link to perl), perlbug, perlcc, perldoc, perlivp, piconv, pl2pm, pod2html, pod21atex, pod2man, pod2text, pod2usage, podchecker, podselect, prove, psed (link to s2p), pstruct (link to c2ph), s2p, splain, and xsubpp Installed libraries: Several hundred which cannot all be listed here
+
+Short Descriptions
+a2p	Translates awk to Perl
+c2ph	Dumps C structures as generated from cc -g -S
+Interact with the Comprehensive Perl Archive Network (CPAN) from the
+cpan
+command line dprofpp     Displays Perl profile data
+Builds a Perl extension for the Encode module from either Unicode Character
+enc2xs
+Mappings or Tel Encoding Files
+find2perl    Translates find commands to Perl
+h2ph        Converts .h C header files to .ph Perl header files
+h2xs	Converts .h C header files to Perl extensions
+Shell script for examining installed Perl modules, and can even create a
+instmodsh
+tarball from an installed module ;libnetcfg    Can be used to configure the libnet
+Combines some of the best features of C, sed, awk and sh into a single swiss-
+perl
+army language perl5.8.8    A hard link to perl
+Used to generate bug reports about Perl, or the modules that come with it,
+perl bug
+and mail them ^>erlcc       Generates executables from Perl programs
+Displays a piece of documentation in pod format that is embedded in the Perl
+perldoc
+installation tree or in a Perl script
+The Perl Installation Verification Procedure; it can be used to verify that Perl
+perlivp
+and its libraries have been installed correctly piconv      A Perl version of the character encoding converter iconv
+pl2pm	A rough tool for converting Perl4 .pi files to PerI5 .pm modules
+pod2html	Converts files from pod format to HTML format
+pod2latex	Converts files from pod format to LaTeX format
+,pod2man	Converts pod data to formatted *roff input
+jpod2text	Converts pod data to formatted ASCII text
+1pod2usage	Prints usage messages from embedded pod docs in files
+podchecker Checks the syntax of pod format documentation files
+podselect	Displays selected sections of pod documentation
+prove	Command line tool for running tests against the Test::Harness module.
+psed	A Perl version of the stream editor sed
+pstruct	Dumps C structures as generated from cc -g -S stabs
+s2p	Translates sed scripts to Perl
+[splain	Is used to force verbose warning diagnostics in Perl
+Exsubpp	Converts Perl XS code into C code
+
+2.4.18	Readline-5.2
+
+The Readline package is a set of libraries that offers command-line editing and history capabilities.
+
+Contents of Readline
+Installed libraries: libhistory.{a,so}, and libreadline.{a,so}
+
+:Short Descriptions
+
+libhistory Provides a consistent user interface for recalling lines of history
+Aids in the consistency of user interface across discrete programs that need to
+libreadline
+provide a command line interface
+
+
+2.4.19	Zlib-1.2.3
+The Zlib package contains compression and decompression routines used by some programs.
+
+■Contents of Zlib
+Installed libraries: libz.{a,so}
+
+Short Descriptions
+
+pibz Contains compression and decompression functions used by some programs
+
+2.4.20 Autoconf-2.61
+The Autoconf package contains programs for producing shell scripts that can automatically configure source code.
+
+"Contents of Autoconf
+Installed programs: autoconf, autoheader, autom4te, autoreconf, autoscan, autoupdate, and ifnames
+
+Bhort Descriptions
+Produces shell scripts that automatically configure software source code packages to adapt to many kinds of Unix4ike systems. The configuration
+autoconf
+scripts it produces are independent—running them does not require the autoconf program.
+autoheader A tool for creating template files of C #define statements for configure to use
+autom4te  A wrapper for the M4 macro processor
+Automatically runs autoconf, autoheader, aclocal, automake, gettextize, and putoreconf libtoolize in the correct order to save time when changes are made to autoconf and automake template files
+Helps to create a configure.in file for a software package; it examines the source files in a directory tree, searching them for common portability issues,
+autoscan
+and creates a configure.scan file that serves as as a preliminary configure.in file for the package
+Modifies a configure.in file that still calls autoconf macros by their old names
+autoupdate
+to use the current macro names
+Helps when writing configure.in files for a software package; it prints the identifiers that the package uses in C preprocessor conditionals. If a package ifnames    has already been set up to have some portability, this program can help determine what configure needs to check for. It can also fill in gaps in a configure.in file generated by autoscan
+
+2.4.21 Automake-1.10
+
+The Automake package contains programs for generating Makefiles for use with Autoconf.
+
+Contents of Automake
+Installed programs: acinstall, aclocal, aclocal-1.10, automake, automake-1.10, compile, config.guess, config.sub, depcomp, elisp-comp, install-sh, mdate-sh, missing, mkinstalldirs, py-compile, symlink-tree, and ylwrap
+
+Short Descriptions
+acinstall       A script that installs aclocal-style M4 files
+aclocal	Generates aclocal.m4 files based on the contents of configure.in files
+aclocal-1.10 A hard link to aclocal
+A tool for automatically generating Makefile.in files from Makefile.am files. To create all the Makefile.in files for a package, run this program in automake     the top-level directory. By scanning the configure.in file, it automatically finds each appropriate Makefile.am file and generates the corresponding
+ 
+
+automake-1.10
+compile       A wrapper for compilers
+config.guess A script that attempts to guess the canonical triplet for the given build, host,
+or target architecture config.sub    A configuration validation subroutine script
+A script for compiling a program so that dependency information is
+depcomp
+generated in addition to the desired output : elisp-comp   Byte-compiles Emacs Lisp code rinstall-sh      A script that installs a program, script, or data file ^.mdate-sh      A script that prints the modification time of a file or directory
+A script acting as a common stub for missing GNU programs during an
+missing
+installation
+mkinstalldirs A script that creates a directory tree
+!py-compile   Compiles a Python program
+symlink-tree A script to create a symlink tree of a directory tree
+ylwrap	A wrapper for lex and yacc
+
+2.4.22 Bash-3.2
+
+The Bash package contains the Bourne-Again SHell.
+
+Contents of Bash
+Installed programs: bash, bashbug, and sh (link to bash)
+
+[Short Descriptions
+A widely-used command interpreter; it performs many types of expansions and bash     substitutions on a given command line before executing it, thus making this interpreter a powerful tool
+A shell script to help the user compose and mail standard formatted bug reports
+bashbug
+concerning bash
+A symlink to the bash program; when invoked as sh, bash tries to mimic the Sh       startup behavior of historical versions of sh as closely as possible, while conforming to the POSIX standard as well
+fc.4.23 Bzip2-1.0.4
+The Bzip2 package contains programs for compressing and decompressing files. 'Compressing text files with bzip2 yields a much better compression percentage than with the traditional gzip.
+
+[Contents of Bzip2
+Installed programs: bunzip2 (link to bzip2), bzcat (link to bzip2), bzcmp (link to ftzdiff), bzdiff, bzegrep (link to bzgrep), bzfgrep (link to bzgrep), bzgrep, bzip2, bzip2recover, bzless (link to bzmore), and bzmore Installed libraries: libbz2.{a,so}
+
+Short Descriptions
+bunzip2	Decompresses bzipped files
+lozcat	Decompresses to standard output
+bzcmp	Runs cmp on bzipped files
+£>zdiff	Runs diff on bzipped files
+bzgrep	Runs grep on bzipped files
+bzegrep	Runs egrep on bzipped files
+bzfgrep	Runs fgrep on bzipped files
+ 
+
+
+
+bzip2
+ 
+Compresses files using the Burrows-Wheeler block sorting text compression algorithm with Huffman coding; the compression rate is better than that achieved by more conventional compressors using "Lempel-Ziv" algorithms, like gzip
+ 
+bzip2recover Tries to recover data from damaged bzipped files
+ 
+bzless
+ 
+Runs less on bzipped files
+ 
+
+ 
+ibzmore
+ 
+Runs more on bzipped files
+ 
+
+Iibbz2*
+ 
+The library implementing lossless, block-sorting data compression, using the Burrows-Wheeler algorithm
+ 
+
+2.4.24. Diffutils-2.8.1
+
+The Diffutils package contains programs that show the differences between files or directories.
+
+Contents of Diffutils
+Installed programs: cmp, diff, diff3, and sdiff
+
+Short Descriptions
+cmp Compares two files and reports whether or in which bytes they differ diff Compares two files or directories and reports which lines in the files differ diff3 Compares three files line by line sdiff Merges two files and interactively outputs the results
+
+2.4.25. File-4.21
+
+The File package contains a utility for determining the type of a given file or files.
+
+Contents of File
+Installed programs: file Installed library: libmagic.{a,so}
+
+Bihort Descriptions
+
+Tries to classify each given file; it does this by performing several tests—file
+file
+system tests, magic number tests, and language tests libmagic Contains routines for magic number recognition, used by the file program
+
+2.4.26 Findutils-4.2.31
+
+The Findutils package contains programs to find files. These programs are provided to recursively search through a directory tree and to create, maintain, and search a database (often faster than the recursive find, but unreliable if the database has not been recently updated).
+Contents of Findutils
+Installed programs: Digram, code, find, frcode, locate, updatedb, and xargs
+
+Short Descriptions
+bigram   Was formerly used to produce locate databases
+code      Was formerly used to produce locate databases; it is the ancestor of frcode. find       Searches given directory trees for files matching the specified criteria Is called by updatedb to compress the list of file names; it uses front-
+frcode
+compression, reducing the database size by a factor of four to five.
+
+Searches through a database of file names and reports the names that contain a
+locate
+given string or match a given pattern
+Updates the locate database; it scans the entire file system (including other file updatedb systems that are currently mounted, unless told not to) and puts every file name it finds into the database
+xargs     Can be used to apply a given command to a list of files 2.4.27. Flex-2.5.33
+The Flex package contains a utility for generating programs that recognize patterns in text.
+
+Contents of Flex
+Installed programs: flex and lex Installed library: libfl.a
+
+Short Descriptions
+A tool for generating programs that recognize patterns in text; it allows for the flex   versatility to specify the rules for pattern-finding, eradicating the need to develop a specialized program
+fex    A script that runs flex in lex emulation mode libfl.a The flex library 2.4.28 GRUB-0.97
+The GRUB package contains the GRand Unified Bootloader. Contents of GRUB
+Installed programs: grub, grub-install, grub-md5-crypt, grub-set-default, grub-terminfo, and mbchk
+
+Short Descriptions
+grub	The Grand Unified Bootloader's command shell
+grub-install   Installs GRUB on the given device
+ 
+grub-md5-crypt
+grub-set-default
+ 
+
+Encrypts a password in MD5 format
+
+
+Sets the default boot entry for GRUB
+ 
+grub-	Generates a terminfo command from a terminfo name; it can be employed
+terminfo      if an unknown terminal is being used
+mbchk        Checks the format of a multi-boot kernel 2.4.29. Gawk-3.1.5
+The Gawk package contains programs for manipulating text files. Contents of Gawk
+Installed programs: awk (link to gawk), gawk, gawk-3.1.5, great, igawk, pgawk, pgawk-3.1.5, and pwcat
+
+Short Descriptions
+
+awk	A link to gawk
+ 
+
+ 
+gawk
+ 
+A program for manipulating text files; it is the GNU implementation of awk
+ 
+gawk-3.1.5  A hard link to gawk
+ 
+great
+ 
+Dumps the group database /etc/group
+ 
+
+ 
+jgawk
+ 
+Gives gawk the ability to include files
+ 
+
+ 
+pgawk
+ 
+The profiling version of gawk
+ 
+pgawk-3.1.5 Hard link to pgawk
+ 
+pwcat
+ 
+Dumps the password database /etc/passwd
+ 
+
+2.4.30. Gettext-0.16.1
+
+The Gettext package contains utilities for internationalization and localization. These allow programs to be compiled with NLS (Native Language Support), enabling them to output messages in the user's native language.
+
+Contents of Gettext
+
+Installed programs: autopoint, config.charset, config.rpath, envsubst, gettext, gettext.sh, gettextize, hostname, msgattrib, msgcat, msgemp, msgcomm, msgconv, msgen, msgexec, msgfilter, msgfmt, msggrep, msginit, msgmerge, msgunfmt, msguniq, ngettext, recode-sr-latin, and xgettext
+Installed libraries: libasprintf.{a,so}, libgettextlib.so, libgettextpo.{a,so}, and libgettextsrc.so
+
+Short Descriptions
+■autopoint      Copies standard Gettext infrastructure files into a source package config.charset Outputs a system-dependent table of character encoding aliases
+Outputs a system-dependent set of variables, describing how to set the
+config.rpath
+runtime search path of shared libraries in an executable envsubst       Substitutes environment variables in shell format strings
+ 
+
+gettext
+ 
+Translates a natural language message into the user's language by looking up the translation in a message catalog gettext.sh
+
+gettextize
+hostname
+msgattrib
+msgcat
+; msgcmp
+} msgcomm ! msgconv msgen \ msgexec tmsgfilter ■ msgfmt
+
+msggrep
+
+
+msginit
+
+msgmerge msgunfmt msguniq
+
+ngettext
+
+recode-sr-latin
+
+xgettext
+ 
+Primarily serves as a shell function library for gettext
+Copies all standard Gettext files into the given top-level directory of a package to begin internationalizing it
+Displays a network hostname in various forms
+Filters the messages of a translation catalog according to their attributes and manipulates the attributes
+Concatenates and merges the given .po files
+Compares two .po files to check that both contain the same set of msgid strings
+Finds the messages that are common to to the given .po files Converts a translation catalog to a different character encoding Creates an English translation catalog
+Applies a command to all translations of a translation catalog
+Applies a filter to all translations of a translation catalog
+Generates a binary message catalog from a translation catalog
+Extracts all messages of a translation catalog that match a given pattern or belong to some given source files
+Creates a new .po file, initializing the meta information with values from the user's environment
+Combines two raw translations into a single file
+Decompiles a binary message catalog into raw translation text
+Unifies duplicate translations in a translation catalog
+Displays native language translations of a textual message whose grammatical form depends on a number
+
+Recodes Serbian text from Cyrillic to Latin script
+
+Extracts the translatable message lines from the given source files to make the first translation template
+ 
+
+defines the autosprintf class, which makes C formatted output routines :libaspr.intf     usable in C++ programs, for use with the <string> strings and the <iostream> streams
+a private library containing common routines used by the various Gettext
+■libgettextlib
+programs; these are not intended for general use
+Used to write specialized programs that process .po files; this library is libgettextpo   used when the standard applications shipped with Gettext (such as msgcomm, msgcmp, msgattrib, and msgen) will not suffice
+A private library containing common routines used by the various Gettext
+libgettextsrc
+programs; these are not intended for general use
+
+
+2.4.31. Grep-2.5.la
+The Grep package contains programs for searching through files.
+Contents of Grep
+Installed programs: egrep, fgrep, and grep
+
+Short Descriptions
+egrep Prints lines matching an extended regular expression fgrep Prints lines matching a list of fixed strings grep Prints lines matching a basic regular expression
+.2.4.32 Groff-1.18.1.4
+The Groff package contains programs for processing and formatting text. Contents of Groff
+Installed programs: addftinfo, afmtodit, eqn, eqn2graph, geqn (link to eqn), grn, grodvi, groff, groffer, grog, grolbp, grolj4, grops, grotty, gtbl (link to tbl), hpftodit, indxbib, lkbib, lookbib, mmroff, neqn, nroff, pfbtops, pic, pic2graph, post-grohtml, pre-grohtml, refer, soelim, tbl, tfrntodit, and troff
+
+Short Descriptions
+
+Reads a troff font file and adds some additional font-metric information that
+■addftinfo
+is used by the groff system afmtodit   Creates a font file for use with groff and grops
+Compiles descriptions of equations embedded within troff input files into
+eqn
+commands that are understood by troff eqn2graph Converts a troff EQN (equation) into a cropped image geqn        A link to eqn
+grn	A groff preprocessor for gremlin files
+grodvi      A driver for groff that produces TeX dvi format
+A front-end to the groff document formatting system; normally, it runs the
+Igroff
+troff program and a post-processor appropriate for the selected device
+groffer     Displays groff files and man pages on X and tty terminals
+Reads files and guesses which of the groff options -e, -man, -me, -mm, -ms, -grog        p, -s, and -t are required for printing files, and reports the groff command including those options
+Is a groff driver for Canon CAPSL printers (LBP-4 and LBP-8 series laser
+grolbp
+printers)
+Is a driver for groff that produces output in PCL5 format suitable for an HP
+igrolj4
+LaserJet 4 printer grops       Translates the output of GNU troff to PostScript
+Translates the output of GNU troff into a form suitable for typewriter-like
+igrotty
+devices
+gtbl	A link to tbl
+hpftodit Creates a font file for use with groff -Tlj4 from an HP-tagged font metric file indxbib     Creates an inverted index for the bibliographic databases with a specified file
+ 
+
+ 
+
+
+lkbib
+
+
+
+
+
+lookbib
+
+
+
+
+mmroff
+
+neqn
+
+( nroff pfbtops
+
+' pic
+
+: pic2graph
+\ post-grohtml
+pre-
+grohtml refer
+soelim tbl
+
+tfmtodit
+ 
+for use with refer, lookbib, and lkbib
+Searches bibliographic databases for references that contain specified keys and reports any references found
+Prints a prompt on the standard error (unless the standard input is not a terminal), reads a line containing a set of keywords from the standard input, searches the bibliographic databases in a specified file for references containing those keywords, prints any references found on the standard output, and repeats this process until the end of input
+A simple preprocessor for groff
+Formats equations for American Standard Code for Information Interchange (ASCII) output
+A script that emulates the nroff command using groff Translates a PostScript font in .pfb format to ASCII
+Compiles descriptions of pictures embedded within troff or TeX input files into commands understood by TeX or troff
+Converts a PIC diagram into a cropped image Translates the output of GNU troff to HTML
+
+
+Translates the output of GNU troff to HTML
+
+Copies the contents of a file to the standard output, except that lines between .[ and .] are interpreted as citations, and lines between .Rl and .R2 are interpreted as commands for how citations are to be processed
+Reads files and replaces lines of the form .so file by the contents of the mentioned file
+Compiles descriptions of tables embedded within troff input files into commands that are understood by troff
+Creates a font file for use with groff-Tdvi
+ 
+
+Is highly compatible with Unix troff; it should usually be invoked using the troff        groff command, which will also run preprocessors and post-processors in th appropriate order and with the appropriate options
+2.4.33. Gzip-1.3.12
+The Gzip package contains programs for compressing and decompressing files. Contents of Gzip
+Installed programs: gunzip, gzexe, gzip, uncompress, zcat, zcmp, zdiff, zegrep, zfgrep, zforce, zgrep, zless, zmore, and znew
+
+Short Descriptions
+gunzip       Decompresses gzipped files
+gzexe        Creates self-decompressing executable files
+gzip	Compresses the given files using Lempel-Ziv (LZ77) coding
+uncompress Decompresses compressed files
+zcat	Decompresses the given gzipped files to standard output
+zcmp        Runs cmp on gzipped files
+zdiff	Runs diff on gzipped files
+zegrep Runs egrep on gzipped files zfgrep        Runs fgrep on gzipped files
+Forces a .gz extension on all given files that are gzipped files, so that gzip zforce       will not compress them again; this can be useful when file names were
+truncated during a file transfer
+zgrep	Runs grep on gzipped files
+zless	Runs less on gzipped files
+zmore	Runs more on gzipped files
+znew	Re-compresses files from compress format to gzip format—.Z to .gz
+: The Inetutils package contains programs for basic networking.
+Contents of Inetutils
+Installed programs: ftp, ping, ping6, rep, rlogin, rsh, talk, telnet, and tftp
+
+Short Descriptions
+■ftp    Is the file transfer protocol program
+ping  Sends echo-request packets and reports how long the replies take
+ping6 A version of ping for IPv6 networks
+rep    Performs remote file copy
+rlogin Performs remote login
+rsh    Runs a remote shell
+talk   Is used to chat with another user
+telnet An interface to the TELNET protocol
+tftp    A trivial file transfer program
+
+2.4.35.	IPRoute2-2.6.20-070313
+
+The IPRoute2 package contains programs for basic and advanced IPV4-based networking.
+
+Contents of IPRoute2 ■
+Installed programs: arpd, ctstat (link to lnstat), genl, ifcfg, ifstat, ip, lnstat, nstat, routef, routel, rtacct, rtmon, rtpr, rtstat (link to lnstat), ss, and tc.
+
+Short Descriptions
+
+Userspace ARP daemon, useful in really large networks, where the kernelspace
+arpd
+ARP implementation is insufficient, or when setting up a honeypot ctstat Connection status utility
+ifcfg A shell script wrapper for the ip command
+Shows the interface statistics, including the amount of transmitted and received
+ifstat
+packets by interface
+The main executable. It has several different functions:
+
+ip link <device> allows users to look at the state of devices and to make changes
+
+ip addr allows users to look at addresses and their properties, add new addresses, and delete old ones
+
+ip neighbor allows users to look at neighbor bindings and their properties, add new neighbor entries, and delete old ones
+
+ip rule allows users to look at the routing policies and change them
+
+ip route allows users to look at the routing table and change routing table rules
+
+ip tunnel allows users to look at the IP tunnels and their properties, and change them
+
+ip maddr allows users to look at the multicast addresses and their properties, and change them
+
+ip mroute allows users to set, change, or delete the multicast routing
+
+ip monitor allows users to continously monitor the state of devices, addresses and routes
+Provides Linux network statistics. It is a generalized and more feature-complete
+lnstat
+replacement for the old rtstat program nstat Shows network statistics
+routef A component of ip route. This is for flushing the routing tables routel A component of ip route. This is for listing the routing tables rtacct Displays the contents of/proc/net/rt_acct rtmon Route monitoring utility
+rtpr   Converts the output of ip -o back into a readable form rtstat Route status utility
+ss     Similar to the netstat command; shows active connections
+Traffic Controlling Executable; this is for Quality Of Service (QOS) and Class Of Service (COS) implementations
+tc qdisc allows users to setup the queueing discipline
+|       tc class allows users to setup classes based on the queuing discipline scheduling
+tc estimator allows users to estimate the network flow into a network
+tc filter allows users to setup the QOS/COS packet filtering
+tc policy allows users to setup the QOS/COS policies
+2.4.36. Kbd-1.12
+The Kbd package contains key-table files and keyboard utilities. Contents of Kbd
+Installed programs: chvt, deallocvt, dumpkeys, fgconsole, getkeycodes, kbdjmode, kbdrate, loadkeys, loadunimap, mapscrn, openvt, psfaddtable (link to psfxtable), psfgettable (link to psfxtable), psfstriptable (link to psfxtable), psfxtable, resizecons, setfont, setkeycodes, setleds, setmetamode, showconsolefont, showkey, unicode_start, and unicode_stop
+
+Short Descriptions
+chvt	Changes the foreground virtual terminal
+deallocvt	Deallocates unused virtual terminals
+dumpkeys	Dumps the keyboard translation tables
+ 
+
+ 
+fgconsole
+getkeycodes
+kbd_mode
+kbdrate
+loadkeys
+loadunimap
+
+mapscrn
+
+openvt
+psfaddtable
+psfgettable
+psfstriptable
+psfxtable
+resizecons
+
+setfont
+
+
+setkeycodes
+
+setleds
+setmetamode
+showconsolefont
+
+showkey
+
+unicode_start unicode_stop
+ 
+Prints the number of the active virtual terminal
+Prints the kernel scancode-to-keycode mapping table
+Reports or sets the keyboard mode
+Sets the keyboard repeat and delay rates
+Loads the keyboard translation tables
+Loads the kernel unicode-to-font mapping table
+An obsolete program that used to load a user-defined output character mapping table into the console driver; this is now done by setfont
+Starts a program on a new virtual terminal (VT)
+A link to psfxtable
+A link to psfxtable
+A link to psfxtable
+Handle Unicode character tables for console fonts Changes the kernel idea of the console size
+Changes the Enhanced Graphic Adapter (EGA) and Video Graphics Array (VGA) fonts on the console
+Loads kernel scancode-to-keycode mapping table entries; this is useful if there are unusual keys on the keyboard
+Sets the keyboard flags and Light Emitting Diodes (LEDs)
+Defines the keyboard meta-key handling
+Shows the current EGA/VGA console screen font
+Reports the scancodes, keycodes, and ASCII codes of the keys pressed on the keyboard
+Puts the keyboard and console in UNICODE mode. Don't use this program unless your keymap file is in the ISO-8859-1 encoding. For other encodings, this utility produces incorrect results.
+Reverts keyboard and console from UNICODE mode
+ 
+
+The Less package contains a text file viewer.
+
+Contents of Less
+Installed programs: less, lessecho, and lesskey
+
+Short Descriptions
+
+A file viewer or pager; it displays the contents of the given file, letting the user
+less
+scroll, find strings, and jump to marks
+
+Needed to expand meta-characters, such as * and ?, in filenames on Unix
+lessecho
+systems
+lesskey Used to specify the key bindings for less
+2.4.38 Make-3.81
+The Make package contains a program for compiling packages.
+Contents of Make
+Installed program: make
+
+Short Descriptions
+
+Automatically determines which pieces of a package need to be (re)compiled and
+make
+then issues the relevant commands 2.4.39. Man-DB-2.4.4
+
+The Man-DB package contains programs for finding and viewing man pages.
+
+Contents of Man-DB
+Installed programs: accessdb, apropos, catman, convert-mans,lexgrog, man, mandb, manpath, whatis, and zsoelim
+accessdb   Dumps the whatis database contents in human-readable form
+Searches the whatis database and displays the short descriptions of system
+apropos
+commands that contain a given string
+catman     Creates or updates the pre-formatted manual pages
+
+convert-Reformat man pages so that Man-DB can display them
+mans
+lexgrog     Displays one-line summary information about a given manual page
+man	Formats and displays the requested manual page
+mandb      Creates or updates the whatis database
+Displays the contents of $MANPATH or (if $MANPATH is not set) a manpath    suitable search path based on the settings in man.conf and the user's environment
+Searches the whatis database and displays the short descriptions of system
+whatis
+commands that contain the given keyword as a separate word
+Reads files and replaces lines of the form .so file by the contents of the
+zsoelim
+mentioned file 2 A AO. Mktemp-1.5
+The Mktemp package contains programs used to create secure temporary files in shell scripts.
+
+Contents of Mktemp
+Installed programs: mktemp and tempfile
+
+Short Descriptions
+
+mktemp Creates temporary files in a secure manner; it is used in scripts
+
+Creates temporary files in a less secure manner than mktemp; it is installed for
+tempfile
+backwards-compatibility
+2.4.41. Module-Init-Tools-3.2.2
+
+' The Module-Init-Tools package contains programs for handling kernel modules in Linux kernels greater than or equal to version 2.5.47.
+
+Contents of Module-Init-Tools
+Installed programs: depmod, generate-modprobe.conf, insmod, insmod.static, lsmod, modinfo, modprobe, and rmmod
+ 
+Short Descriptions depmod
+
+generate-modprobe.conf
+insmod
+insmod.static
+lsmod
+
+modinfo
+
+modprobe rmmod
+ 
+
+
+
+Creates a dependency file based on the symbols it finds in the existing set of modules; this dependency file is used by modprobe to automatically load the required modules
+
+Creates a modprobe.conf file from an existing 2.2 or 2.4 module setup
+Installs a loadable module in the running kernel A statically compiled version of insmod Lists currently loaded modules
+Examines an object file associated with a kernel module and displays any information that it can glean
+Uses a dependency fde, created by depmod, to automatically load relevant modules
+Unloads modules from the running kernel
+ 
+
+2.4.42. Patch-2.5.4
+
+The Patch package contains a program for modifying or creating files by applying a "patch" file typically created by the diff program.
+
+Contents of Patch
+Installed program: patch
+Modifies files according to a patch file. A patch file is normally a difference listing patch created with the diff program. By applying these differences to the original files, patch creates the patched versions.
+
+2.4.43.	Psmisc-22.5
+
+The Psmisc package contains programs for displaying information about running processes.
+
+Contents of Psmisc
+
+Installed programs: fuser, killall, oldfuser, peekfd, pstree, and pstree.xl 1 (link to
+pstree)
+
+Short Descriptions
+
+Reports the Process IDs (PIDs) of processes that use the given files or file
+fuser
+systems
+Kills processes by name; it sends a signal to all processes running any of the
+killall
+given commands
+Reports the Process IDs (PIDs) of processes that use the given files or file
+oldfuser
+systems
+peekfd     Peek at file descriptors of a running process, given its PID pstree      Displays running processes as a tree
+pstree.xl 1 Same as pstree, except that it waits for confirmation before exiting
+
+2.4.44.	Shadow-4.0.18.1
+
+The Shadow package contains programs for handling passwords in a secure way.
+
+Contents of Shadow
+Installed programs: chage, chfn, chgpasswd, chpasswd, chsh, expiry, faillog, gpasswd, groupadd, groupdel, groupmems, groupmod, grpck, grpconv, grpunconv, lastlog, login, logoutd, newgrp, newusers, nologin, passwd, pwck, pwconv, pwunconv, s (link to newgrp), su, useradd, userdel, usermod, vigr (link to vipw), and vipw Installed libraries: libshadow.{a,so}
+
+Short Descriptions
+
+Used to change the maximum number of days between obligatory password
+chage
+changes
+chfn	Used to change a user's full name and other information
+chgpasswd Used to update group passwords in batch mode
+chpasswd   Used to update user passwords in batch mode
+chsh	Used to change a user's default login shell
+expiry       Checks and enforces the current password expiration policy
+Is used to examine the log of login failures, to set a maximum number of
+faillog
+failures before an account is blocked, or to reset the failure count gpasswd     Is used to add and delete members and administrators to groups groupadd   Creates a group with the given name groupdel    Deletes the group with the given name
+Allows a user to administer his/her own group membership list without the
+groupmems
+requirement of super user privileges,
+groupmod  Is used to modify the given group's name or GID
+grpck        Verifies the integrity of the group files /etc/group and /etc/gshadow
+grpconv     Creates or updates the shadow group file from the normal group file
+grpunconv Updates /etc/group from /etc/gshadow and then deletes the latter
+lastlog       Reports the most recent login of all users or of a given user
+login	Is used by the system to let users sign on
+logoutd      Is a daemon used to enforce restrictions on log-on time and ports newgrp      Is used to change the current GID during a login session newusers    Is used to create or update an entire series of user accounts
+ 
+
+ 
+
+nologin
+
+passwd pwck pwconv pwunconv
+
+sg
+su
+useradd
+userdel
+usermod
+vigr vipw
+libshadow
+ 
+Displays a message that an account is not available. Designed to be used as the default shell for accounts that have been disabled
+Is used to change the password for a user or group account
+Verifies the integrity of the password files /etc/passwd and /etc/shadow
+Creates or updates the shadow password file from the normal password file
+Updates /etc/passwd from /etc/shadow and then deletes the latter
+Executes a given command while the user's GID is set to that of the given group
+Runs a shell with substitute user and group IDs
+Creates a new user with the given name, or updates the default new-user information
+Deletes the given user account
+Is used to modify the given user's login name, User Identification (UID), shell, initial group, home directory, etc.
+Edits the /etc/group or /etc/gshadow files
+Edits the /etc/passwd or /etc/shadow files
+Contains functions used by most programs in this package
+ 
+
+2.4.45 Sysklogd-1.4.1
+
+The Sysklogd package contains programs for logging system messages, such as those given by the kernel when unusual things happen.
+
+Contents of Sysklogd
+Installed programs: klogd and syslogd
+
+Short Descriptions
+
+klogd   A system daemon for intercepting and logging kernel messages
+Logs the messages that system programs offer for logging. Every logged
+syslogd
+message contains at least a date stamp and a hostname, and normally the
+program's name too, but that depends on how trusting the logging daemon is told to be
+
+2.4.46. Sysvinit-2.86
+
+The Sysvinit package contains programs for controlling the startup, running, and shutdown of the system.
+
+Contents of Sysvinit
+Installed programs: bootlogd, halt, init, killall5, last, lastb (link to last), mesg, mountpoint, pidof (link to killall5), poweroff (link to halt), reboot (link to halt), runlevel, shutdown, sulogin, telinit (link to init), utmpdump, and wall
+
+Short Descriptions
+
+bootlogd    Logs boot messages to a log file
+Normally invokes shutdown with the -h option, except when already in run-
+halt	level 0, then it tells the kernel to halt the system; it notes in the file
+/var/log/wtmp that the system is being brought down
+The first process to be started when the kernel has initialized the hardware
+init
+which takes over the boot process and starts all the proceses it is instructed to Sends a signal to all processes, except the processes in its own session so it
+killaUS
+will not kill the shell running the script that called it
+Shows which users last logged in (and out), searching back through the
+last	/var/log/wtmp file; it also shows system boots, shutdowns, and run-level
+changes
+lastb	Shows the failed login attempts, as logged in /var/log/btmp
+mesg        Controls whether other users can send messages to the current user's terminal
+mountpoint Checks if the directory is a mountpoint
+pidof        Reports the PIDs of the given programs
+poweroff   Tells the kernel to halt the system and switch off the computer (see halt)
+reboot       Tells the kernel to reboot the system (see halt)
+
+Reports the previous and the current run-level, as noted in the last run-level
+xunlevel
+record in /var/run/utmp
+
+Brings the system down in a secure way, signaling all processes and
+shutdown
+notifying all logged-in users
+Allows root to log in; it is normally invoked by init when the system goes
+sulogin
+into single user mode telinit       Tells init which run-level to change to
+utmpdump Displays the content of the given login file in a more user-friendly format
+wall	Writes a message to all logged-in users
+2.4.47. Tar-1.18
+The Tar package contains an archiving program.
+Contents of Tar
+Installed programs: rmt and tar
+
+Short Descriptions
+
+Remotely manipulates a magnetic tape drive through an interprocess communication
+rmt
+connection
+tar Creates, extracts files from, and lists the contents of archives, also known as tarballs 2.4.48 Texinfo-4.9
+
+The Texinfo package contains programs for reading, writing, and converting info
+pages.
+
+Contents of Texinfo
+Installed programs: info, infokey, install-info, makeinfo, texi2dvi, texi2pdf, and texindex
+Used to read info pages which are similar to man pages, but often go much info        deeper than just explaining all the available command line options. For example, compare man bison and info bison.
+infokey    Compiles a source file containing Info customizations into a binary format
+install-
+Used to install info pages; it updates entries in the info index file
+info
+Translates the given Texinfo source documents into info pages, plain text, or
+makeinfo
+HTML
+Used to format the given Texinfo document into a device-independent file that
+texi2dvi
+can be printed
+Used to format the given Texinfo document into a Portable Document Format
+texi2pdf
+(PDF) file
+texindex  Used to sort Texinfo index files 2.4.49 Udev-113
+
+The Udev package contains programs for dynamic creation of device nodes.
+
+Contents of Udev
+Installed programs: ata_id, cdrom_id, create_floppy_devices, edd_id, firmware.sh, path_id, scsi_id, udevcontrol, udevd, udevinfo, udevmonitor, udevsettle, udevtest, udevtrigger, usb_id, vol_id, write_cd_rules, and write_net_rules Installed libraries: libvolume_id Installed directory: /etc/udev
+
+Short Descriptions
+
+Provides Udev with a unique string and additional information
+ata_id
+(uuid, label) for an ATA drive
+cdrom_id	Provides Udev with the capabilities of a CD-ROM or DVD-ROM
+drive
+■ create_floppy_devices Creates all possible floppy devices based on the CMOS type
+ 
+edd_id firmware.sh ■ path_id
+scsi_id
+udevcontrol
+udevd
+
+
+
+udevinfo
+
+udevmonitor udevsettle
+
+
+udevtest
+
+udevtrigger
+usb_id
+vol_id
+
+write cd rules
+ 
+Provides Udev with the EDD ID for a BIOS disk drive Uploads firmware to devices
+Provide the shortest possible unique hardware path to a device
+Provides Udev with a unique SCSI identifier based on the data returned from sending a SCSI INQUIRY command to the specified device
+Configures a number of options for the running udevd daemon, such as the log level.
+A daemon that listens for uevents on the netlink socket, creates devices and runs the configured external programs in response to these uevents
+Allows users to query the Udev database for information on any device currently present on the system; it also provides a way to query any device in the sysfs tree to help create udev rules
+Prints the event received from the kernel and the environment which Udev sends out after rule processing
+Watches the Udev event queue and exits if all current uevents have been handled
+Simulates a uevent for the given device, and prints out the name of the node the real udevd would have created, or the name of the renamed network interface
+Triggers kernel device uevents to be replayed
+Provides Udev with information about USB devices
+Provides Udev with the label and uuid of a filesystem
+A script which generates Udev rules to provide stable names for optical drives.
+write_net_rules
+libvolume_id
+/etc/udev
+ 
+A script which generates rules to provide stable names for network interfaces.
+
+
+Contains Udev configuation files, device permissions, and rules for device naming
+ 
+
+2.4.50. Util4inux-2.12r
+
+The Util-linux package contains miscellaneous utility programs. Among them are utilities for handling file systems, consoles, partitions, and messages.
+
+Contents of Util-linux
+Installed programs: agetty, arch, blockdev, cal, cfdisk, chkdupexe, col, colcrt, colrm, column, ctrlaltdel, cytune, ddate, dmesg, elvtune, fdformat, fdisk, flock, fsck.cramfs, fsck.minix, getopt, hexdump, hwclock, ipcrm, ipcs, isosize, line, logger, look, losetup, mcookie, mkfs, mkfs.bfs, mkfs.cramfs, mkfs.minix, mkswap, more, mount, namei, pg, pivot_root, ramsize (link to rdev), raw, rdev, readprofile, rename, renice, rev, rootflags (link to rdev), script, setfdprm, setsid, setterm, sfdisk, swapoff (link to swapon), swapon, tailf, tunelp, ul, umount, vidmode (link to rdev), whereis, and write
+agetty arch
+
+Short Descriptions
+Opens a tty port, prompts for a login name, and then invokes the login program
+Reports the machine's architecture
+blockdev     Allows users to call block device ioctls from the command line
+cal	Displays a simple calendar
+cfdisk        Manipulates the partition table of the given device
+chkdupexe  Finds duplicate executables
+col	Filters out reverse line feeds
+colcrt	Filters nroff output for terminals that lack some capabilities, such as
+ 
+
+ 
+
+colrm column
+ctrlaltdel
+cytune
+ddate
+dmesg
+elvtune
+fdformat
+fdisk
+flock
+fsck.cramfs fsck.minix getopt hexdump
+
+hwclock
+ipcrm
+ipcs
+isosize
+line
+logger
+look
+losetup
+mcookie
+ 
+overstriking and half-lines
+Filters out the given columns
+Formats a given file into multiple columns
+Sets the function of the Ctrl+Alt+Del key combination to a hard or a soft reset
+Tunes the parameters of the serial line drivers for Cyclades cards
+Gives the Discordian date or converts the given Gregorian date to a Discordian one
+Dumps the kernel boot messages
+Tunes the performance and interactivity of a block device
+Low-level formats a floppy disk
+Manipulates the paritition table of the given device
+Acquires a file lock and then executes a command with the lock held
+Performs a consistency check on the Cramfs file system on the given device
+Performs a consistency check on the Minix file system on the given device
+Parses options in the given command line
+Dumps the given file in hexadecimal or in another given format
+Reads or sets the system's hardware clock, also called the Real-Time Clock (RTC) or Basic Input-Output System (BIOS) clock
+Removes the given Inter-Process Communication (IPC) resource
+Provides IPC status information
+Reports the size of an iso9660 file system
+Copies a single line
+Enters the given message into the system log Displays lines that begin with the given string Sets up and controls loop devices
+Generates magic cookies (128-bit random hexadecimal numbers) for xauth
+ 
+
+mkfs	Builds a file system on a device (usually a hard disk partition)
+mkfs.bfs     Creates a Santa Cruz Operations (SCO) bfs file system mkfs.cramfs Creates a cramfs file system mkfs.minix Creates a Minix file system
+mkswap     Initializes the given device or file to be used as a swap area
+more	A filter for paging through text one screen at a time
+Attaches the file system on the given device to a specified directory in the
+mount
+file-system tree
+namei	Shows the symbolic links in the given pathnames
+pg	Displays a text file one screen full at a time
+pivot_root   Makes the given file system the new root file system of the current process
+ramsize      Sets the size of the RAM disk in a bootable image
+raw	Used to bind a Linux raw character device to a block device
+rdev	Queries and sets the root device, among other things, in a bootable image
+readprofile  Reads kernel profiling information
+rename       Renames the given files, replacing a given string with another
+renice        Alters the priority of running processes
+rev	Reverses the lines of a given file
+rootflags     Sets the rootflags in a bootable image
+script	Makes a typescript of a terminal session
+setfdprm     Sets user-provided floppy disk parameters
+setsid	Runs the given program in a new session
+setterm       Sets terminal attributes
+sfdisk        A disk partition table manipulator
+swapoff      Disables devices and files for paging and swapping
+Enables devices and files for paging and swapping and lists the devices and
+swapon
+files currently in use
+ 
+
+ 
+tailf
+tunelp
+ul
+umount vidmode
+whereis write
+ 
+Tracks the growth of a log file. Displays the last 10 lines of a log file, then continues displaying any new entries in the log file as they are created
+Tunes the parameters of the line printer
+A filter for translating underscores into escape sequences indicating underlining for the terminal in use
+Disconnects a file system from the system's file tree
+Sets the video mode in a bootable image
+Reports the location of the binary, source, and man page for the given command
+Sends a message to the given user //'that user has not disabled receipt of such messages
+ 
+2.4.51. Vim-7.1
+The Vim package contains a powerful text editor. Contents of Vim
+Installed programs: efm_filter.pl, efm_perl.pl, ex (link to vim), less.sh, mve.awk, pltags.pl, ref, rview (link to vim), rvim (link to vim), shtags.pl, vi (link to vim), view (link to vim), vim, vim 132, vim2html.pl, vimdiff (link to vim), vimm, vimspell.sh, vimtutor, and xxd
+
+Short Descriptions
+
+efm_filter.pl A filter for creating an error file that can be read by vim
+Reformats the error messages of the Perl interpreter for use with the
+efm_perl.pl
+"quickfix" mode of vim ■
+ex	Starts vim in ex mode
+less.sh        A script that starts vim with less.vim mve.awk  Processes vim errors pltags.pl      Creates a tags file for Perl code for use by vim
+ref	Checks the spelling of arguments
+
+Is a restricted version of view; no shell commands can be started and view
+rview
+cannot be suspended
+Is a restricted version of vim; no shell commands can be started and vim
+rvim
+cannot be suspended
+shtags.pl     Generates a tags file for Perl scripts
+vi	Link to vim
+view	Starts vim in read-only mode
+vim	Is the editor
+vim 132       Starts vim with the terminal in 132-column mode
+vim2html.pl Converts Vim documentation to HypterText Markup Language (HTML)
+vimdiff      Edits two or three versions of a file with vim and show differences
+vimm	Enables the DEC locator input model on a remote terminal
+Spell checks a file and generates the syntax statements necessary to vimspell.sh highlight in vim. This script requires the old Unix spell command, which is provided neither in LFS nor in BLFS
+vimtutor     Teaches the basic keys and commands of vim
+Creates a hex dump of the given file; it can also do the reverse, so it can be
+xxd
+used for binary patching 2. 5 SETTING UP SYSTEM BOOTSCRIPTS.
+To finish the installation, the LFS-Bootscripts and the kernel and boot loader are set up in this chapter. This chapter details how to install and configure the LFS-Bootscripts package.
+
+LFS-Bootscripts-6.3:
+The LFS-Bootscripts package contains a set of scripts to start/stop the LFS system at bootup/shutdown.
+2.5.1 Installation of LFS-Bootscripts
+
+Install the package:
+
+make install '
+
+Contents of LFS-Bootscripts
+Installed scripts: checkfs, cleanfs, console, consolelog, functions, halt, ifdown, ifup, localnet, modules, mountfs, mountkernfs, network, rc, reboot, sendsignals, setclock, static, swap, sysctl, sysklogd, template, udev, and udev_retry
+
+Short Descriptions
+checkfs        Checks the integrity of the file systems before they are mounted (with the exception of journal and network based file systems)
+cleanfs	Removes files that should not be preserved between reboots, such as
+those in /var/run/ and /var/lock/; it re-creates /var/run/utmp and removes the possibly present /etc/nologin, /fastboot, and /forcefsck files
+console        Loads the correct keymap table for the desired keyboard layout; it also sets the screen font
+
+consolelog    Sets the kernel log level to control messages reaching the console.
+functions      Contains common functions, such as error and status checking, that are used by several bootscripts
+halt	Halts the system
+ifdown	Assists the network script with stopping network devices
+ifup	Assists the network script with starting network devices
+localnet	Sets up the system's hostname and local loopback device
+modules       Loads   kernel   modules   listed   in   /etc/sysconfig/modules,   using arguments that are also given there
+mountfs        Mounts all file systems, except ones that are marked noauto or are network based
+mountkemfs Mounts virtual kernel file systems, such asproc
+network       Sets up network interfaces, such as network cards, and sets up the default gateway (where applicable)
+rc	The master run-level control script; it is responsible for running all the
+other bootscripts one-by-one, in a sequence determined by the name of the symbolic links being processed
+
+reboot	Reboots the system
+sendsignals   Makes sure every process is terminated before the system reboots or halts
+setclock        Resets the kernel clock to local time in case the hardware clock is not set to UTC time
+static	Provides the functionality needed to assign a static Internet Protocol
+(IP) address to a network interface
+
+swap	Enables and disables swap files and partitions
+sysctl	Loads system configuration values from /etc/sysctl.conf, if that file
+exists, into the running kernel
+sysklogd       Starts and stops the system and kernel log daemons
+template       A template to create custom bootscripts for other daemons
+udev	Prepares the /dev directory and starts Udev
+udev_retry    Retries failed udev uevents, and copies generated rules files from /dev/.udev to /etc/udev/rules.d if required
+
+
+2.5.2 How Do These Bootscripts Work?
+
+Linux uses a special booting facility named SysVinit that is based on a concept of run-levels. It can be quite different from one system to another, so it cannot be assumed that because things worked in one particular Linux distribution, they should work the same in LFS too. LFS has its own way of doing things, but it respects generally accepted standards.
+
+SysVinit (which will be referred to as "init" from now on) works using a run-levels scheme. There are seven (numbered 0 to 6) run-levels (actually, there are more run-levels, but they are for special cases and are generally not used. See init(8) for more details), and each one of those corresponds to the actions the computer is supposed to perform when it starts up. The default run-level is 3. Here are the descriptions of the different run-levels as they are implemented:
+
+0: halt the computer 1: single-user mode
+2: multi-user mode without networking
+3: multi-user mode with networking
+4: reserved for customization, otherwise does the same as 3
+5: same as 4,it is usually used for GUI login(like X's xdm or KDE's kdm)
+6: reboot the computer
+
+The command used to change run-levels is init <runlevel>, where <nmlevel> is the target run-level. For example, to reboot the computer, a user could issue the init 6 command, which is an alias for the reboot command. Likewise, init 0 is an alias for the halt command.
+
+There are a number of directories under /etc/red that look like rc?.d (where ? is the number of the run-level) and rcsysinit.d, all containing a number of symbolic links. Some begin with a K, the others begin with an S, and all of them have two numbers following the initial letter. The K means to stop (kill) a service and the S means to start a service. The numbers determine the order in which the scripts are run, from 00 to 99—the lower the number the earlier it gets executed. When init switches to another run-level, the appropriate services are either started or stopped, depending on the runlevel chosen.
+The real scripts are in /etc/rc.d/init.d. They do the actual work, and the symlinks all point to them. Killing links and starting links point to the same script in /etc/rc.d/init.d. This is because the scripts can be called with different parameters like start, stop, restart, reload, and status. When a K link is encountered, the appropriate script is run with the stop argument. When an S link is encountered, the appropriate script is run with the start argument.
+
+There is one exception to this explanation. Links that start with an 5 in the rcO.d and rc6.d directories will not cause anything to be started. They will be called with the parameter stop to stop something. The logic behind this is that when a user is going to reboot or halt the system, nothing needs to be started. The system only needs to be stopped.
+
+These are descriptions of what the arguments make the scripts do:
+
+start
+The service is started.
+stop
+The service is stopped.
+restart
+The service is stopped and then started again.
+reload
+The configuration of the service is updated. This is used after the configuration file of a service was modified, when the service does not need to be restarted.
+status
+Tells if the service is running and with which PIDs.
+
+Feel free to modify the way the boot process works (after all, it is your own LFS system). The files given here are an example of how it can be done.
+2.5.3	Configuring the setclock Script
+
+The setclock script reads the time from the hardware clock, also known as the BIOS or the Complementary Metal Oxide Semiconductor (CMOS) clock. If the hardware clock is set to UTC, this script will convert the hardware clock's time to the local time using the /etc/localtime file (which tells the hwclock program which timezone the user is in). There is no way to detect whether or not the hardware clock is set to UTC, so this needs to be configured manually.
+
+2.5.4	Configuring the Linux Console
+
+This section discusses how to configure the console and consolelog bootscripts that set up the keyboard map, console font and console kernel log level. If non-ASCII characters (e.g., the copyright sign, the British pound sign and Euro symbol) will not be used and the keyboard is a U.S. one, much of this section can be skipped. Without the configuration file, the console bootscript will do nothing.
+
+2.5.5	Creating the /etc/inputrc File
+
+The inputrc file handles keyboard mapping for specific situations. This file is the startup file used by Readline — the input-related library — used by Bash and most other shells.
+
+2.5.6	The Bash Shell Startup Files
+
+The shell program /bin/bash (hereafter referred to as "the shell") uses a collection of startup files to help create an environment to run in. Each file has a specific use and may affect login and interactive environments differently. The files in the /etc directory provide global settings. If an equivalent file exists in the home directory, it may override the global settings.
+2.5.7 Configuring the localnet Script
+
+Part of the job of the localnet script is setting the system's hostname. This needs to be configured in the /etc/sysconfig/network file.
+
+2.5.8 Customizing the /etc/hosts File
+
+If a network card is to be configured, decide on the IP address, fully-qualified domain name (FQDN), and possible aliases for use in the /etc/hosts file.
+
+2.6:MAKING THE LFS SYSTEM BOOTABLE
+
+2.6.1	Creating the /etc/fstab File
+
+The /etc/fstab file is used by some programs to determine where file systems are to be mounted by default, in which order, and which must be checked (for integrity errors) prior to mounting.
+2.6.2	Linux-2.6.22.5
+The Linux package contains the Linux kernel.
+Installation of the kernel
+Building the kernel involves a few steps—configuration, compilation, and installation. Read the README file in the kernel source tree for alternative methods to the way this book configures the kernel.
+
+2.6.3	Making the LFS System Bootable
+
+Boot loading can be a complex area, so a few cautionary words are in order. Be familiar with the current boot loader and any other operating systems present on the hard drive(s) that need to be bootable. GRUB uses its own naming structure for drives and partitions in the form of (hdn,m), where n is the hard drive number and m is the partition number, both starting from zero. For example, partition hdal is (hdO,0) to GRUB and
+ 
+hdb3 is (lull,2). In contrast to Linux, GRUB does not consider CD-ROM drives to be hard drives. For example, if using a CD on hdb and a second hard drive on hdc, that second hard drive would still be (lull).
+
+2.6.4 Rebooting the System
+
+Now that all of the software has been installed, it is time to reboot your computer. Now that we have said that, lets move on to booting our shiny new LFS installation for the first time! First exit from the chroot environment.Then unmount the virtual files systems. Unmount the LFS file system itself. Now, reboot the system.
+ 
+System study is the first stage of system development life cycle..System study aims at establishing request for the system to be acquired,developed and installed.lt involves studying and analyzing the ways of an organization currently processing the data to produce information.Analyzing the problem thoroughly forms the vital part of the system study.In system analysis,prevailing situation of problem is carefully examined by breaking them into subproblems.Problematic areas are identified and information is collected.Data gathering is essential to any analyzis of request.lt is necessary that this analyzis familiarizez the designer with objectives,activities and the function of the organization in which system is to be implemented.
+
+3.1	STUDY OF EXISTING SYSTEM
+When you install a regular distribution, you often end up installing a lot of programs that you would probably never use.Linux is not a customized system according to the user's tastes and needs. It take a lot of disk space for storage, also security of linux is restricted in some means
+
+3.2	STUDY OF PROPOSED SYSTEM
+There are several benefits of building LFS
+>	Building LFS produces a very compact Linux system
+>	LFS is extremely flexible
+You have the ability to turn it into whatever type of system you need it to be, customized completely for you.
+>	LFS offers you added security
+LFS system is compiled from source, thus allowing us to audit everything, if we wish to do so, and apply all the security patches we want or need to apply.
+The second phase in system development cycle is system analysis. Analysis involved a detailed study of the current system, leading to specifications of a new system. Analysis is a detailed study of various operations performed by a system and their relationships within and outside the system.
+
+System Analysis also includes sub-dividing of complex process involving the entire system, identification of data store and manual processes.
+
+The main points to be discussed in system analysis are:
+•	Specification of what the new system is to accomplish based on the user requirements.
+•	Functional hierarchy showing the functions to be performed by the new system and their relationship with each other.
+•	Function network which are similar to function hierarchy but they highlight the those functions which are common to more than one procedure.
+ 
+HARDWARE REQUIREMENTS: Processor : PENTIUM IV Ram       :512 MB RAM Hard Disk : 80 GB Hard disk
+
+
+
+
+SOFTWARE REQUIREMENTS:
+
+Operating System     : Linux
+ 
+Based on the user requirements and the detailed analysis of a new system, the new system must be designed. This is the phase of system designing. It is a most crucial phase in the development of a system. Normally, the design proceeds in two stages :
+•	preliminary or general design
+•	Structure or detailed design
+
+Preliminary or general design: In the preliminary or general design, the features of the new system are specified. The costs of implementing these features and the benefits to be derived are estimated. If the project is still considered to be feasible, we move to the detailed design stage.
+
+Structure or Detailed design: In the detailed design stage, computer oriented work begins in earnest. At this stage, the design of the system becomes more structured. Structure design is a blue print of a computer system solution to a given problem having the same components and inter-relationship among the same components as the original problem. Input, output and processing specifications are drawn up in detail. In the design stage, the programming language and the platform in which the new system will run are also decided.
+After designing the new system, the whole system is required to be converted into computer understanding language. Coding the new system into computer programming language does this. It is an important stage where the defined procedure are transformed into control specifications by the help of a computer language. This is also called the programming phase in which the programmer converts the program specifications into computer instructions, which we refer as programs. The programs coordinate the data movements and control the entire process in a system.
+
+In our project we deals with making a new operating system from an existing one. Instead Of coding here we install various kind of packages using some built in commands using the existing system. These packages are given in tarball format. The procedure used to deal with these packages are
+>	Untar
+>	Configure
+>	Compilation
+>	Installation
+Before actually implementing the new system into operations, a test run of the system is done removing all the bugs, if any. It is an important phase of a successful system. After codifying the whole programs of the system, a test plan should be developed and run on a given set of test data. The output of the test run should match the expected results.
+
+Using the test data following test run are carried out:
+•	Unit test
+•	System test
+
+Unit test: When the programs have been coded and compiled and brought to working conditions, they must be individually tested with the prepared test data. Any undesirable happening must be noted and debugged (error corrections).
+
+System Test: After carrying out the unit test for each of the programs of the system and when errors are removed, then system test is done. At this stage the test is done on actual data. The complete system is executed on the actual data. At each stage of the execution, the results or output of the system is analysed. During the result analysis, it may be found that the outputs are not matching the expected out of the system. In such case, the errors in the particular programs are identified and are fixed and further tested for the expected output.
+ 
+
+The Linux From Scratch (LFS) is a compact, flexible Linux system. LFS also provides more security features and consume less space compared to existing Linux system.
+
+We have succeeded in developing the LFS system using all phases of software development cycle. We are also succeeded in building an error free and efficient LFS system within the given time limit. There is also provision for future developments in the system.
+The current system developed is in accordance with the taste and needs of a user. On regarding the future enhancement the system can further expanded in accordance with the changing scenario. Since the change in testing and user needs arises frequently in certain short intervals of time, the system can be further upgraded to meet the requirements that may arise in the far or near future. With regarding to the needs that arises ,more and more features can be included by adding it as separate modules and integrate it with the existing system .
+ 
+www.linuxtromscratch.org
